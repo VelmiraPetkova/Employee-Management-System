@@ -11,3 +11,9 @@ class ContractType(Enum):
     permanent  = "permanent"
     temporary  = "temporary"
     civil  = "civil"
+
+
+class AbsenceType(Enum):
+    sick = "sick"
+    paid  = "paid"
+    unpaid = "unpaid"

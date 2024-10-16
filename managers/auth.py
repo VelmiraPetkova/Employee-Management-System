@@ -2,8 +2,9 @@ from datetime import datetime, timedelta, UTC
 
 import jwt
 from decouple import config
+from flask_httpauth import HTTPTokenAuth
 from jwt import DecodeError, InvalidSignatureError
-from werkzeug.exceptions import BadRequest
+from werkzeug.exceptions import BadRequest, Unauthorized
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from db import db
@@ -53,3 +54,19 @@ class AuthManager:
             return jwt.decode(token, config('SECRET_KEY'), algorithms=['HS256'])
         except (DecodeError, InvalidSignatureError):
             raise BadRequest('Invalid or missing token')
+
+
+
+auth = HTTPTokenAuth(scheme='Bearer')
+
+@auth.verify_token
+def verify_token(token):
+    try:
+        payload = AuthManager.decode_token(token)
+        user = UserModel.query.filter_by(id=payload['sub']).first()
+        if not user:
+            raise Unauthorized('Invalid token or missing token')
+        return user
+    except Exception:
+        raise Unauthorized('Invalid token or missing token')
+

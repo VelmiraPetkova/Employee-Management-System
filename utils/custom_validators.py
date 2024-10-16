@@ -71,3 +71,8 @@ def validate_iban(iban):
     iban= clean_iban(iban)
     if not re.fullmatch(IBAN_PATTERN, iban):
         raise ValidationError(f"IBAN is invalid")
+
+
+def validate_work_hours(work_hours):
+    if 0.1 >work_hours > 8.0:
+        raise ValidationError(f"Work hours must be between 0 and 8")
