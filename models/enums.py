@@ -17,3 +17,9 @@ class AbsenceType(Enum):
     sick = "sick"
     paid  = "paid"
     unpaid = "unpaid"
+
+
+class State(Enum):
+    pending = "Pending"
+    approved = "Approved"
+    rejected = "Rejected"

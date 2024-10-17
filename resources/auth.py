@@ -1,13 +1,16 @@
+
+
 from flask import request
 from flask_restful import Resource
-from werkzeug.exceptions import BadRequest
-from werkzeug.security import check_password_hash
 
-from managers.auth import AuthManager
-from models import UserModel
-from schemas.request.users import UserRegisterRequestSchema, UserLoginRequestSchema
+from db import db
+from managers.auth import AuthManager, auth
+from managers.user import UserManager
+from models import UserType, UserModel
+from schemas.request.users import UserRegisterRequestSchema, UserLoginRequestSchema, UserManagerSchema
+from schemas.response.user import UserOutSchema
 from schemas.response.users import UserAuthResponseSchema
-from utils.decorators import validate_schema
+from utils.decorators import validate_schema, permission_required
 
 
 class UserRegisterResource(Resource):
@@ -29,4 +32,18 @@ class UserLoginResource(Resource):
         return UserAuthResponseSchema().dump({"token": token})
 
 
-#api.add_resource(UserRegisterResource, '')
+class AddManagerResource(Resource):
+    @auth.login_required
+    @permission_required([UserType.accountant])
+    @validate_schema(UserManagerSchema)
+    def put(self,user_id):
+        data = request.get_json()
+        user= UserManager.assign_manager(data,user_id)
+        return UserOutSchema().dump(user)
+
+
+class UserChangeResource(Resource):
+        pass
+
+class ChangePasswordResource(Resource):
+    pass

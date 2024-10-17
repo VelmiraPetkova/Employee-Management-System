@@ -4,7 +4,7 @@ from sqlalchemy import  ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from db import  db
-from models.enums import AbsenceType
+from models.enums import AbsenceType, State
 
 
 class AbsenceModel(db.Model):
@@ -22,4 +22,11 @@ class AbsenceModel(db.Model):
     contracts_id: Mapped[int] = mapped_column(db.Integer, ForeignKey('contracts.id'), nullable=True)
     contract: Mapped['ContractsModel'] = relationship('ContractsModel')
 
-    # TO DO: this is must be approved
+    # TODO: this is must be approved
+    status: Mapped[State] = mapped_column(db.Enum(State), default = State.pending.name,
+        nullable=False
+    )
+
+
+
+

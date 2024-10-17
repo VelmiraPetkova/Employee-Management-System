@@ -1,7 +1,10 @@
 from datetime import datetime, date
 
+from alembic.util import status
 from flask import jsonify
+from werkzeug.exceptions import BadRequest
 
+from models.enums import  State
 from db import db
 from models import ContractsModel, AbsenceModel
 from utils.missing_required_field_error import CustomError
@@ -49,3 +52,25 @@ class AbsenceManager:
         db.session.add(absence)
         db.session.commit()
         return absence, True
+
+
+    @staticmethod
+    def approve_absence(absence_id):
+        AbsenceManager._validate_absence(absence_id)
+        absence = AbsenceModel.query.filter_by(id=absence_id).update({"status": State.approved})
+        db.session.commit()
+
+    @staticmethod
+    def reject_absence(absence_id):
+        AbsenceManager._validate_absence(absence_id)
+        absence = AbsenceModel.query.filter_by(id=absence_id).update({"status": State.rejected})
+        db.session.commit()
+
+    @staticmethod
+    def _validate_absence(absence_id):
+        absence = AbsenceModel.query.filter_by(id=absence_id).first()
+        if not absence:
+            raise BadRequest("Absence not found.")
+
+        if absence.status != State.pending:
+            raise BadRequest("Can not change status of absence.")

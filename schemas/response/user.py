@@ -4,3 +4,4 @@ class UserOutSchema(Schema):
     id = fields.Integer()
     created_on = fields.DateTime()
     updated_on = fields.DateTime()
+    manager = fields.Integer()

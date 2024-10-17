@@ -2,6 +2,9 @@ from password_strength import PasswordPolicy
 from marshmallow import ValidationError
 import re
 
+from werkzeug.exceptions import BadRequest, NotFound
+
+from models import UserModel
 from utils.clean_data import *
 
 MIN_LENGHT = 4

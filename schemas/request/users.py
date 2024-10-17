@@ -1,4 +1,4 @@
-from marshmallow import  fields, validate
+from marshmallow import fields, validate, Schema
 
 from models import UserType
 from schemas.base import UserRequestBase
@@ -26,3 +26,7 @@ class UserRegisterRequestSchema(UserRequestBase):
 
 class UserLoginRequestSchema(UserRequestBase):
     pass
+
+class UserManagerSchema(Schema):
+    manager = fields.Integer(required=True)
+

@@ -13,7 +13,13 @@ from utils.decorators import validate_schema, permission_required
 
 class ContractsResource(Resource):
     @auth.login_required
-    @permission_required(UserType.accountant)
+    def get(self):
+        contracts = ManagerContract.get_contracts()
+        return ContractResponse(many=True).dump(contracts)
+
+
+    @auth.login_required
+    @permission_required([UserType.accountant])
     @validate_schema(RequestContractSchema)
     def post(self):
         data = request.get_json()
