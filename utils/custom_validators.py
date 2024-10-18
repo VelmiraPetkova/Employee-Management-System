@@ -10,7 +10,7 @@ from utils.clean_data import *
 MIN_LENGHT = 4
 MAX_LENGHT = 20
 VALID_DOMAIN = (".com", ".bg", ".net", ".org")
-valid_name_email = r'(\w+)'
+valid_name_email = r'(\w+(\.\w+)?$)'
 valid_domain_email = r'(\..+)$'
 
 policy = PasswordPolicy.from_names(
@@ -79,3 +79,5 @@ def validate_iban(iban):
 def validate_work_hours(work_hours):
     if 0.1 >work_hours > 8.0:
         raise ValidationError(f"Work hours must be between 0 and 8")
+
+

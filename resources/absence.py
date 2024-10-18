@@ -10,6 +10,7 @@ from utils.decorators import validate_schema, permission_required
 
 
 class AbsenceRegisterResource(Resource):
+    @auth.login_required
     @validate_schema(AbsenceRequestSchema)
     def post(self):
         data = request.get_json()

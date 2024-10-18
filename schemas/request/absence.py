@@ -9,6 +9,7 @@ class AbsenceRequestSchema(Schema):
     days = fields.Integer(required=True)
     employee = fields.Integer(required=True)
     photo = fields.String(required=False)
+    photo_extension = fields.String(required=False)
     type= fields.Str(
         required=True,
         validate=validate.OneOf([role.value for role in AbsenceType], error="Invalid type of absence")

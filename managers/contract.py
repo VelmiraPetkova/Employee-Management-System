@@ -1,6 +1,7 @@
 from flask import jsonify
 from marshmallow import ValidationError
 from sqlalchemy.sql.functions import current_user
+from werkzeug.exceptions import BadRequest, NotFound
 
 from db import db
 from managers.auth import auth
@@ -38,6 +39,10 @@ class ManagerContract:
         if contract_data.get('contract_type')== 'temporary' and contract_data.get('end_date') is None:
             return CustomError('End date cannot be empty when contract is temporary', 400), False
 
+        #todo this is not work??
+        if contract_data.get('contract_type')== 'permanent' or contract_data.get('contract_type')== 'ContractType.permanent' and contract_data.get('end_date') is not None:
+            return CustomError('If you have a contract end date, change its type', 400), False
+
         # Find the user by the provided employee
         employee_id = contract_data.get('employee')
         employee = UserModel.query.get(employee_id)
@@ -55,3 +60,24 @@ role_mapper = {
              UserType.manager : ManagerContract._get_contract_by_manager,
              UserType.accountant : ManagerContract._get_contract_by_accountant
                }
+
+
+class ContractChangeManager:
+    @staticmethod
+    def check_contract_id(contract_id):
+        try:
+            contract = ContractsModel.query.filter_by(id=contract_id).first()
+        except (BadRequest, NotFound):
+            raise BadRequest('No such contract exists')
+        return contract
+
+    @staticmethod
+    def change_contract(contract_id, contract_data):
+        contract=ContractChangeManager.check_contract_id(contract_id)
+        for key, value in contract_data.items():
+            if hasattr(contract, key):
+                setattr(contract, key, value)
+        db.session.commit()
+        return contract
+
+

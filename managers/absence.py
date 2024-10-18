@@ -1,18 +1,36 @@
+import os.path
+import uuid
 from datetime import datetime, date
 
-from alembic.util import status
 from flask import jsonify
 from werkzeug.exceptions import BadRequest
 
+from constants import ROOT_DIR, TEMP_FILES_PATH
+from managers.auth import auth
 from models.enums import  State
 from db import db
 from models import ContractsModel, AbsenceModel
+from services.s3 import S3Service
 from utils.missing_required_field_error import CustomError
+from utils.working_with_files import decode_photo
 
+
+s3_service = S3Service()
 
 class AbsenceManager:
     @staticmethod
+    def validate_type_contract():
+        user = auth.current_user()
+        contract = ContractsModel.query.filter_by(employee=user.id).first()
+        return contract
+
+
+    @staticmethod
     def create_absence(absence_data):
+        contract_type= AbsenceManager.validate_type_contract().contract_type
+        if contract_type == 'civil':
+            return CustomError("Your contract is not eligible for absence"), False
+
 
         # Convert string to date
         try:
@@ -45,8 +63,24 @@ class AbsenceManager:
             # Ensure that the absence period falls within the contract period
         if not (
                 contract_start_date <= from_date and contract_start_date <= to_date):
-            return CustomError ("The absence dates are not within the active contract period."), False
+            return CustomError("The absence dates are not within the active contract period."), False
 
+
+        #Work with photo before create absence
+        photo_name = f"{str(uuid.uuid4())}.{absence_data.pop('photo_extension')}"
+        path_to_store_photo= os.path.join(TEMP_FILES_PATH, photo_name)
+        photo= absence_data.pop('photo')
+        decode_photo(path_to_store_photo, photo)
+
+        try:
+            bucket_url= s3_service.upload_file(path_to_store_photo, photo)
+        except Exception as ex:
+            raise Exception("Upload to s3 failed")
+        finally:
+            os.remove(path_to_store_photo)
+
+
+        absence_data["photo"] = bucket_url
 
         absence = AbsenceModel(**absence_data)
         db.session.add(absence)

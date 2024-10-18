@@ -4,9 +4,9 @@ from flask import request, jsonify
 
 from db import db
 from managers.auth import auth
-from managers.contract import ManagerContract
+from managers.contract import ManagerContract, ContractChangeManager
 from models import ContractsModel, UserType
-from schemas.request.contract import RequestContractSchema
+from schemas.request.contract import RequestContractSchema, ChangeContractSchema
 from schemas.response.contract import ContractResponse, ContractErrorResponse
 from utils.decorators import validate_schema, permission_required
 
@@ -27,3 +27,14 @@ class ContractsResource(Resource):
         if not ok:
             return ContractErrorResponse().dump(result), result.error_code
         return ContractResponse().dump(result)
+
+
+
+class ContractChangeResource(Resource):
+    @auth.login_required
+    @permission_required([UserType.accountant, UserType.manager])
+    @validate_schema(ChangeContractSchema)
+    def put(self, contract_id):
+        data = request.get_json()
+        contract= ContractChangeManager.change_contract(contract_id, data)
+        return ContractResponse().dump(contract)
