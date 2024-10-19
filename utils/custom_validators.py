@@ -8,7 +8,7 @@ from models import UserModel
 from utils.clean_data import *
 
 MIN_LENGHT = 4
-MAX_LENGHT = 20
+MAX_LENGHT = 100
 VALID_DOMAIN = (".com", ".bg", ".net", ".org")
 valid_name_email = r'(\w+(\.\w+)?$)'
 valid_domain_email = r'(\..+)$'
@@ -43,7 +43,7 @@ def email_is_valid(email):
 
     matches = re.findall(valid_name_email, email_name)
 
-    if matches[0] != email_name:
+    if matches[0][0] != email_name:
         raise ValidationError("Email can contain only letters, digits and underscores!")
 
 

@@ -5,7 +5,9 @@ from db import db
 #from decouple import config
 
 from resources.routes import routes
+from services.SES import SEService
 
+SEService().create_template()
 app = Flask(__name__)
 app.config.from_object('config.DevelopmentConfig') #to do env
 

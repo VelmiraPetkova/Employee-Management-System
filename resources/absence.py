@@ -14,9 +14,7 @@ class AbsenceRegisterResource(Resource):
     @validate_schema(AbsenceRequestSchema)
     def post(self):
         data = request.get_json()
-        result, ok = AbsenceManager.create_absence(data)
-        if not ok:
-            return AbsenceErrorResponse().dump(result), result.error_code
+        result = AbsenceManager.create_absence(data)
         return AbsenceResponse().dump(result)
 
 class AbsenceApproveResource(Resource):

@@ -9,6 +9,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 from db import db
 from models import UserModel
+from services.SES import SEService
 from utils.clean_data import *
 
 
@@ -23,6 +24,7 @@ class AuthManager:
         user = UserModel(**user_data)
         db.session.add(user)
         db.session.commit()
+        SEService().verify_email_identity(user.email)
         return user
 
     @staticmethod

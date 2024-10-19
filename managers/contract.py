@@ -6,6 +6,7 @@ from werkzeug.exceptions import BadRequest, NotFound
 from db import db
 from managers.auth import auth
 from models import ContractsModel, UserModel, UserType
+from services.SES import SEService
 from utils.missing_required_field_error import CustomError
 
 
@@ -49,9 +50,17 @@ class ManagerContract:
         if not employee:
             return CustomError('Please register the user in the system first', 400), False
 
+
         contract = ContractsModel(**contract_data)
+        name = employee.name
+        recipient = employee.email
+
+
         db.session.add(contract)
         db.session.commit()
+
+        SEService().send_email(name, recipient)
+
         return contract, True
 
 
