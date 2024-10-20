@@ -13,19 +13,20 @@ from utils.missing_required_field_error import CustomError
 
 class ManagerContract:
     @staticmethod
-    def get_contracts():
-        role = auth.current_user().role
-        contracts = role_mapper[role]()
+    def get_contracts(role):
+        user_rol = role.role
+        #user_rol = auth.current_user().role
+        contracts = role_mapper[user_rol]()
         return contracts
 
     @staticmethod
     def _get_contract_by_accountant():
-        ContractsModel.query.filter_by().all()
+        return ContractsModel.query.filter_by().all()
 
     @staticmethod
     def _get_contract_by_employee():
         current_user = auth.current_user()
-        return ContractsModel.query.filter_by(user_id = current_user.id).all()
+        return ContractsModel.query.filter_by(employee = current_user.id).all()
 
     @staticmethod
     def _get_contract_by_manager():
@@ -55,10 +56,8 @@ class ManagerContract:
         name = employee.name
         recipient = employee.email
 
-
         db.session.add(contract)
         db.session.commit()
-
         SEService().send_email(name, recipient)
 
         return contract, True

@@ -14,8 +14,9 @@ from utils.decorators import validate_schema, permission_required
 class ContractsResource(Resource):
     @auth.login_required
     def get(self):
-        contracts = ManagerContract.get_contracts()
-        return ContractResponse(many=True).dump(contracts)
+        user = auth.current_user()
+        contracts = ManagerContract.get_contracts(user)
+        return ContractResponse().dump(contracts, many=True)
 
 
     @auth.login_required

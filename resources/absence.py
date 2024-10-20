@@ -29,3 +29,8 @@ class AbsenceRejectResource(Resource):
     @permission_required([UserType.manager, UserType.accountant])
     def get(self, absence_id):
         AbsenceManager.reject_absence(absence_id)
+
+class AbsenceDeleteResource(Resource):
+    @auth.login_required
+    def delete(self, absence_id):
+        AbsenceManager.delete_absence(absence_id)

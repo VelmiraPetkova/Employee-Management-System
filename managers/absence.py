@@ -112,3 +112,15 @@ class AbsenceManager:
 
         if absence.status != State.pending:
             raise BadRequest("Can not change status of absence.")
+
+    @staticmethod
+    def delete_absence(absence_id):
+        current_absence = AbsenceModel.query.filter_by(id=absence_id).first()
+        curr_user = auth.current_user().id
+        if curr_user != current_absence.employee:
+            raise BadRequest("Can not delete absence!")
+
+        current_absence.delete()
+
+
+
