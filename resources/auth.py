@@ -42,6 +42,9 @@ class AddManagerResource(Resource):
         return UserOutSchema().dump(user)
 
 
+
+
+
 class UserChangeResource(Resource):
         pass
 

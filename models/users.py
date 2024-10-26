@@ -16,7 +16,7 @@ class UserModel(db.Model):
     civil_number: Mapped[str] = mapped_column(db.String(10), nullable=False, unique=True)
     address: Mapped[str] = mapped_column(db.String(255), nullable=True, server_default="Undefined",default="Undefined")
     phone: Mapped[str] = mapped_column(db.String(10), nullable=False)
-    email: Mapped[str] = mapped_column(db.String(100), nullable=False, unique=True)
+    email: Mapped[str] = mapped_column(db.String(100), nullable=False, unique=False)
     password: Mapped[str] = mapped_column(db.String(200), nullable=False)
     iban: Mapped[str] = mapped_column(db.String(22), nullable=False, unique=True)
     created_on: Mapped[datetime] = mapped_column(default=datetime.now(UTC))
