@@ -12,8 +12,8 @@ class RequestContractSchema(ContractBase):
 
 
 class ChangeContractSchema(ContractBase):
-    employee = fields.Integer(required=False)
-    effective = fields.Date(required=False, validate=lambda x: x >= date.today())
+    employee = fields.Integer(required=True)
+    effective = fields.Date(required=False)
     hours = fields.Float(required=False,
         validate=[validate.Range(min=0, max=8, error="Hours must be between 0 and 8."), validate_work_hours, ]
     )

@@ -7,7 +7,7 @@ class AbsenceRequestSchema(Schema):
     from_= fields.Date(required=True)
     to_ = fields.Date(required=True)
     days = fields.Integer(required=True)
-    employee = fields.Integer(required=True)
+    employee = fields.Integer(required=False)
     photo = fields.String(required=False)
     photo_extension = fields.String(required=False)
     type= fields.Str(

@@ -16,7 +16,7 @@ class UserRequestBase(Schema):
 
 class ContractBase(Schema):
     employee = fields.Integer(required=True)
-    effective = fields.Date(required=True, validate=lambda x: x >= date.today())
+    effective = fields.Date(required=True)
     end_date = fields.Date(required=False)
     salary = fields.Float(required=True, validate=lambda x: x > 0)
     hours = fields.Float(

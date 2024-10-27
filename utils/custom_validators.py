@@ -1,3 +1,5 @@
+from datetime import date
+
 from password_strength import PasswordPolicy
 from marshmallow import ValidationError
 import re
@@ -79,5 +81,3 @@ def validate_iban(iban):
 def validate_work_hours(work_hours):
     if 0.1 >work_hours > 8.0:
         raise ValidationError(f"Work hours must be between 0 and 8")
-
-

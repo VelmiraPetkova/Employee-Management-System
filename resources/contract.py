@@ -1,6 +1,8 @@
 from flask_restful import Resource
 
 from flask import request, jsonify
+from marshmallow import ValidationError
+from werkzeug.exceptions import BadRequest
 
 from db import db
 from managers.auth import auth
@@ -24,11 +26,8 @@ class ContractsResource(Resource):
     @validate_schema(RequestContractSchema)
     def post(self):
         data = request.get_json()
-        result, ok = ManagerContract.create_contract(data)
-        if not ok:
-            return ContractErrorResponse().dump(result), result.error_code
-        return ContractResponse().dump(result)
-
+        result = ManagerContract.create_contract(data)
+        return ContractResponse().dump(result),201
 
 
 class ContractChangeResource(Resource):
