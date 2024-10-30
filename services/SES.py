@@ -10,11 +10,14 @@ from SESTempEmail.template import template_contract, template_name
 
 class SEService:
     def __init__(self):
+        self.create_client()
+
+    def create_client(self):
         self.ses_client = boto3.client('ses',
-                          region_name=config("BUCKET_REGION"),
-                          aws_access_key_id= config("AWS_KEY"),
-                          aws_secret_access_key= config("ASW_SECRET")
-        )
+                                       region_name=config("BUCKET_REGION"),
+                                       aws_access_key_id=config("AWS_KEY"),
+                                       aws_secret_access_key=config("ASW_SECRET")
+                                       )
 
     # Create the template in SES
     def create_template(self):

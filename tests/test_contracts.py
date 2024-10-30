@@ -123,7 +123,8 @@ class TestContract(TestBase):
         assert res.json == {'message': 'If you have a contract end date, change its type'}
 
     @patch.object(SEService, 'send_email')
-    def test_create_contract(self,mock_send_email):
+    @patch.object(SEService, 'create_client')
+    def test_create_contract(self,mock_create_client,mock_send_email):
         contracts = ContractsModel.query.all()
         assert len(contracts) == 0
 
@@ -146,6 +147,7 @@ class TestContract(TestBase):
 
         res = self.client.post("/contract", json=data, headers=headers)
         assert res.status_code == 201
+        mock_create_client.assert_called_once()
         mock_send_email.assert_called_once_with(user.name, user.email)
 
 
