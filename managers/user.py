@@ -18,12 +18,12 @@ class UserManager:
 
     @staticmethod
     def _check_manager(put_data):
-        try:
-            manager = UserModel.query.filter_by(id=put_data.get('manager')).first()
-        except (BadRequest, NotFound):
+        manager = UserModel.query.filter_by(id=put_data.get('manager')).first()
+        if manager is None:
             raise BadRequest('No such manager exists')
+        else:
+            return manager.id
 
-        return manager.id
 
     @staticmethod
     def assign_manager(data,user_id):

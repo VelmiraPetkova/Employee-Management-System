@@ -30,6 +30,6 @@ class ContractsModel(db.Model):
     user_id: Mapped[int] = mapped_column(db.Integer,ForeignKey('users.id'), nullable=False)
     user: Mapped['UserModel'] = relationship('UserModel')
 
-    company_id: Mapped[int] = mapped_column(db.Integer,ForeignKey('company.id'),nullable=True)
-    company: Mapped["CompanyModel"] = relationship('CompanyModel')
+    #company_id: Mapped[int] = mapped_column(db.Integer,ForeignKey('company.id'),nullable=True)
+    #company: Mapped["CompanyModel"] = relationship('CompanyModel')
 

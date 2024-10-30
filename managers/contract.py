@@ -10,7 +10,7 @@ from db import db
 from managers.auth import auth
 from models import ContractsModel, UserModel, UserType
 from services.SES import SEService
-from utils.missing_required_field_error import CustomError
+
 
 
 

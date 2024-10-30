@@ -2,14 +2,14 @@ import os.path
 import uuid
 from datetime import datetime
 
-
+from sqlalchemy import delete
 from werkzeug.exceptions import BadRequest
 
 from constants import ROOT_DIR, TEMP_FILES_PATH
 from managers.auth import auth
 from models.enums import  State
 from db import db
-from models import ContractsModel, AbsenceModel
+from models import ContractsModel, AbsenceModel, ContractType
 from services.s3 import S3Service
 
 from utils.working_with_files import decode_photo
@@ -22,19 +22,13 @@ class AbsenceManager:
     def take_contract(employee=None):
 
         if employee is not None:
-            try:
-                contract= ContractsModel.query.filter_by(employee=employee).first()
-            except Exception as ex:
+            contract= ContractsModel.query.filter_by(employee=employee).first()
+            if contract is None:
                 raise Exception(f"No contract found for employee with ID {employee}")
+
         else:
             user = auth.current_user()
             contract= ContractsModel.query.filter_by(employee=user.id).first()
-
-        try:
-            if contract.contract_type != 'civil':
-                return contract
-        except Exception as ex:
-            raise Exception("Your contract is not eligible for absence")
 
         return contract
 
@@ -52,21 +46,27 @@ class AbsenceManager:
 
     @staticmethod
     def create_absence(absence_data):
-        employee = absence_data.get('employee')
-        contract = absence_data.get('contracts_id')
-        if contract is None:
-            contract= AbsenceManager.take_contract(employee)
+        employee_id = absence_data.get('employee')
+        contract_id= absence_data.get('contracts_id')
+
+        if contract_id is None:
+            contract = AbsenceManager.take_contract(employee_id)
+        else:
+            contract = ContractsModel.query.filter_by(id=contract_id).first()
+
+        #TODO Create test case
+        if contract.contract_type == ContractType.civil:
+            raise BadRequest("Your contract is not eligible for absence")
 
         days = absence_data.get('days')
         type_absence = absence_data.get('type')
         contract_start_date = contract.effective
         # Ensure that the absence period falls within the contract period
-        try:
-            from_date, to_date= AbsenceManager.check_date(absence_data.get('from_'), absence_data.get('to_'))
-            if contract_start_date <= from_date:
-                pass
-        except Exception as ex:
-            raise Exception("The absence dates are not within the active contract period.")
+
+        from_date, to_date= AbsenceManager.check_date(absence_data.get('from_'), absence_data.get('to_'))
+        if contract_start_date > from_date:
+            raise BadRequest("The absence dates are not within the active contract period.")
+
 
         # Work with photo before create absence
         if absence_data.get('photo_extension') and absence_data.get('photo') is not None:
@@ -120,7 +120,5 @@ class AbsenceManager:
         if curr_user != current_absence.employee:
             raise BadRequest("Can not delete absence!")
 
-        current_absence.delete()
-
-
-
+        obj= delete(AbsenceModel).where(current_absence.id == absence_id)
+        db.session.execute(obj)

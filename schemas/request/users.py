@@ -9,9 +9,9 @@ class UserRegisterRequestSchema(UserRequestBase):
     name = fields.String(required=True,
                          validate=validate.And(validate.Length(min=8, max=255), validate_name))
     civil_number = fields.String(required=True,
-                         validate=validate.And(validate.Length(max=10), validate_phone))
-    phone = fields.String(required=True,
                          validate=validate.And(validate.Length(max=10), validate_civil_number))
+    phone = fields.String(required=True,
+                         validate=validate.And(validate.Length(max=10), validate_phone))
 
     iban = fields.String(required=True,
                          validate=validate.And(validate.Length(max=22), validate_iban))

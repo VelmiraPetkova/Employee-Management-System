@@ -15,13 +15,14 @@ class AbsenceRegisterResource(Resource):
     def post(self):
         data = request.get_json()
         result = AbsenceManager.create_absence(data)
-        return AbsenceResponse().dump(result)
+        return AbsenceResponse().dump(result),201
 
 class AbsenceApproveResource(Resource):
     @auth.login_required
     @permission_required([UserType.accountant,UserType.manager])
     def get(self, absence_id):
         AbsenceManager.approve_absence(absence_id)
+
 
 
 class AbsenceRejectResource(Resource):
