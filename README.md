@@ -33,21 +33,22 @@ This platform allows users to register themselves in the system, view informatio
    ```
 2. Navigate to the project directory:
    ```bash
-   cd  Employee-Management-System ```
+   cd  Employee-Management-System
+   ```
 3. Install dependencies:
    ```bash
    pip install -r requirements.txt
    ```
 4. Set up environment variables:
    - Create a `.env` file in the root directory with the following keys:
-     ```plaintext
-	DB_USER=postgres-user
-	DB_PASSWORD=password
-	DB_HOST=127.0.0.1
-	DB_PORT=5432
-	DB_NAME=payrollsystem     
+    ```plaintext
+    DB_USER=postgres-user
+    DB_PASSWORD=password
+    DB_HOST=127.0.0.1
+    DB_PORT=5432
+    DB_NAME=payrollsystem     
     JWT_SECRET=your_secret_key
-     ```
+    ```
 5. Start the server:
    ```bash
    flask run
