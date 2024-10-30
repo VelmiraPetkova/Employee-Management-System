@@ -122,14 +122,13 @@ class TestContract(TestBase):
         assert res.status_code == 400
         assert res.json == {'message': 'If you have a contract end date, change its type'}
 
-    def test_create_contract(self):
+    @patch.object(SEService, 'send_email')
+    def test_create_contract(self,mock_send_email):
         contracts = ContractsModel.query.all()
         assert len(contracts) == 0
 
-        absence = AbsenceModel.query.all()
-        assert len(absence) == 0
-
         user = UserFactory(role=UserType.accountant)
+
         token = generate_token(user)
         headers = {
             "Authorization": f"Bearer {token}",
@@ -137,7 +136,6 @@ class TestContract(TestBase):
         }
 
         effective_date = (datetime.now() + timedelta(days=1)).strftime('%Y-%m-%d')
-
         data = {"employee": user.id,
                 "effective": effective_date,
                 "salary": 9000,
@@ -145,29 +143,9 @@ class TestContract(TestBase):
                 "department": "IT",
                 "position": "Developer"
         }
+
         res = self.client.post("/contract", json=data, headers=headers)
         assert res.status_code == 201
-
-    @patch.object(SEService, 'send_email')
-    def test_create_contract_sends_email(self,mock_send_email):
-        user = UserFactory(role=UserType.accountant)
-
-        token = generate_token(user)
-        headers = {
-            "Authorization": f"Bearer {token}",
-            "Content-Type": "application/json"
-        }
-
-        effective_date = (datetime.now() + timedelta(days=1)).strftime('%Y-%m-%d')
-        data = {"employee": user.id,
-                "effective": effective_date,
-                "salary": 9000,
-                "hours": 7,
-                "department": "IT",
-                "position": "Developer"
-        }
-
-        self.client.post("/contract", json=data, headers=headers)
         mock_send_email.assert_called_once_with(user.name, user.email)
 
 
